@@ -1,0 +1,6 @@
+name = "coappery"
+type = "javascript"
+account_id = "your-account-id"
+workers_dev = true
+main = "src/index.js"
+compatibility_date = "2026-01-15"
