@@ -4,3 +4,8 @@ account_id = "3ab8041c94abe632de363610d166ad47"
 workers_dev = true
 main = "src/index.js"
 compatibility_date = "2026-01-15"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "1e42c559cace4e329ef4099d512fa604"
+
