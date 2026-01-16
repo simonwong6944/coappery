@@ -3,16 +3,80 @@
 <head>
   <title>CoAppery 開發平台</title>
   <link rel="stylesheet" href="styles/main.css">
+  <!-- 添加 Vue.js 用於事件總線 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 </head>
 <body>
   <div id="app">
-    <!-- 主應用容器 -->
+    <h1>CoAppery 模組系統</h1>
+    <div class="console">
+      <h3>系統日誌：</h3>
+      <div id="log-output" style="border:1px solid #ccc; padding:10px; height:200px; overflow:auto;"></div>
+    </div>
   </div>
-  
+
+  <!-- 模組系統核心 -->
   <script src="scripts/lib/module-registry.js"></script>
+  
+  <!-- 功能模組 -->
   <script src="scripts/modules/ai-agent.js"></script>
   <script src="scripts/modules/analyzer.js"></script>
   <script src="scripts/modules/generator.js"></script>
+  
+  <!-- 事件總線初始化 -->
+  <script>
+    // 創建全局事件總線
+    window.EventBus = new Vue({
+      data: {
+        lastActivity: null
+      }
+    });
+
+    // 日誌記錄函數 (在控制台和頁面同時顯示)
+    function log(message) {
+      const timestamp = new Date().toLocaleTimeString();
+      const logEntry = `[${timestamp}] ${message}`;
+      console.log(logEntry);
+      document.getElementById('log-output').innerHTML += logEntry + '<br>';
+    }
+  </script>
+
+  <!-- 主應用邏輯 -->
   <script src="scripts/app/main.js"></script>
+
+  <!-- 自動啟動模擬測試 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      log('系統初始化完成');
+      log('嘗試獲取 AI 超級代理模組...');
+      
+      try {
+        const aiAgent = CoAppery.getModule('AISuperAgent').init();
+        log('AI 模組加載成功');
+        
+        // 模擬用戶輸入觸發流程
+        setTimeout(() => {
+          EventBus.$emit('user-input', '創建用戶註冊模組');
+          log('已發送測試指令: "創建用戶註冊模組"');
+        }, 1000);
+      } catch (e) {
+        log('錯誤: ' + e.message);
+      }
+    });
+  </script>
+
+  <style>
+    /* 基礎樣式 */
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    #log-output {
+      background-color: #f5f5f5;
+      font-family: monospace;
+    }
+  </style>
 </body>
 </html>
