@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coappery 模块市场</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    .module-card {
+      transition: transform 0.3s, box-shadow 0.3s;
+      height: 100%;
+    }
+    .module-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .module-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .module-tags {
+      margin-top: 10px;
+    }
+    .module-tag {
+      display: inline-block;
+      background: #e9ecef;
+      border-radius: 4px;
+      padding: 3px 8px;
+      margin-right: 5px;
+      font-size: 0.8rem;
+    }
+    .search-box {
+      position: sticky;
+      top: 20px;
+      z-index: 100;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <div class="row mb-4">
+      <div class="col">
+        <h1 class="display-4">Coappery 模块市场</h1>
+        <p class="lead">扩展您的网站功能，一键安装专业模块</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-3">
+        <div class="search-box mb-4">
+          <div class="input-group mb-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="搜索模块...">
+            <button class="btn btn-primary" id="searchButton">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+          
+          <h5>分类</h5>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="all" id="filterAll" checked>
+            <label class="form-check-label" for="filterAll">全部</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="admin" id="filterAdmin">
+            <label class="form-check-label" for="filterAdmin">后台管理</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="content" id="filterContent">
+            <label class="form-check-label" for="filterContent">内容管理</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="api" id="filterApi">
+            <label class="form-check-label" for="filterApi">API 集成</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="security" id="filterSecurity">
+            <label class="form-check-label" for="filterSecurity">安全</label>
+          </div>
+          
+          <hr>
+          
+          <h5>排序</h5>
+          <select class="form-select" id="sortSelect">
+            <option value="popular">最受欢迎</option>
+            <option value="newest">最新发布</option>
+            <option value="rating">最高评分</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="col-lg-9">
+        <div class="row" id="modulesContainer">
+          <!-- 模块卡片动态加载 -->
+          <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">加载中...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 模块数据
+    const modules = [
+      {
+        id: "auth-module",
+        name: "用户管理",
+        description: "完整的用户认证系统，支持OAuth2.0登录",
+        category: ["admin", "security"],
+        rating: 4.8,
+        downloads: 1200,
+        updated: "2026-01-10",
+        demoUrl: "/demos/auth.html",
+        tags: ["认证", "安全", "用户"]
+      },
+      {
+        id: "content-module",
+        name: "内容管理",
+        description: "强大的内容编辑器和版本控制系统",
+        category: ["content"],
+        rating: 4.5,
+        downloads: 850,
+        updated: "2026-01-12",
+        demoUrl: "/demos/content.html",
+        tags: ["编辑器", "CMS", "版本控制"]
+      },
+      {
+        id: "api-module",
+        name: "API网关",
+        description: "统一API入口，支持限流和认证",
+        category: ["api"],
+        rating: 4.7,
+        downloads: 950,
+        updated: "2026-01-14",
+        demoUrl: "/demos/api.html",
+        tags: ["API", "网关", "REST"]
+      }
+    ];
+
+    // 模块市场前端逻辑
+    class Marketplace {
+      constructor() {
+        this.modules = modules;
+        this.filteredModules = [];
+        this.container = document.getElementById('modulesContainer');
+        this.searchInput = document.getElementById('searchInput');
+        this.searchButton = document.getElementById('searchButton');
+        this.sortSelect = document.getElementById('sortSelect');
+        
+        this.init();
+      }
+      
+      async init() {
+        // 初始化渲染
+        this.filterModules();
+        
+        // 设置事件监听
+        this.searchButton.addEventListener('click', () => this.filterModules());
+        this.searchInput.addEventListener('keyup', (e) => {
+          if (e.key === 'Enter') this.filterModules();
+        });
+        this.sortSelect.addEventListener('change', () => this.renderModules());
+      }
+      
+      filterModules() {
+        const searchTerm = this.searchInput.value.toLowerCase();
+        const selectedCategories = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+          .map(cb => cb.value);
+        
+        this.filteredModules = this.modules.filter(module => {
+          const matchesSearch = module.name.toLowerCase().includes(searchTerm) ||
+            module.description.toLowerCase().includes(searchTerm);
+          
+          const matchesCategory = selectedCategories.includes('all') ||
+            module.category.some(cat => selectedCategories.includes(cat));
+          
+          return matchesSearch && matchesCategory;
+        });
+        
+        this.sortModules();
+        this.renderModules();
+      }
+      
+      sortModules() {
+        const sortBy = this.sortSelect.value;
+        switch (sortBy) {
+          case 'popular':
+            this.filteredModules.sort((a, b) => b.downloads - a.downloads);
+            break;
+          case 'newest':
+            this.filteredModules.sort((a, b) => new Date(b.updated) - new Date(a.updated));
+            break;
+          case 'rating':
+            this.filteredModules.sort((a, b) => b.rating - a.rating);
+            break;
+        }
+      }
+      
+      renderModules() {
+        this.container.innerHTML = this.filteredModules.map(module => `
+          <div class="col-md-6 mb-4">
+            <div class="card module-card">
+              <div class="card-body">
+                <span class="badge bg-primary module-badge">${module.rating} <i class="bi bi-star"></i></span>
+                <h5 class="card-title">${module.name}</h5>
+                <p class="card-text">${module.description}</p>
+                <div class="module-tags">
+                  ${module.tags.map(tag => `<span class="module-tag">${tag}</span>`).join('')}
+                </div>
+                <div class="mt-3">
+                  <a href="${module.demoUrl}" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-eye"></i> 预览
+                  </a>
+                  <button class="btn btn-primary">
+                    <i class="bi bi-download"></i> 安装
+                  </button>
+                </div>
+              </div>
+              <div class="card-footer text-muted">
+                最后更新: ${module.updated} | 下载量: ${module.downloads}
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // 初始化模块市场
+    new Marketplace();
+  </script>
+</body>
+</html>
