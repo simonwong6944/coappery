@@ -3,14 +3,13 @@
 <head>
   <title>CoAppery 開發平台</title>
   <meta charset="UTF-8">
-  <!-- 添加 CSP 策略（可选） -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net;">
+  <!-- 添加 CSP 策略 -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'unsafe-eval';">
   <link rel="stylesheet" href="styles/main.css">
   <!-- 使用 Vue 运行时版本 -->
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.runtime.min.js"></script>
 </head>
 <body>
-  <!-- 其余代码保持不变 -->
   <div id="app">
     <h1>CoAppery 模組系統</h1>
     <div class="console">
@@ -19,13 +18,16 @@
     </div>
   </div>
 
+  <!-- 模組系統核心 -->
   <script src="scripts/lib/module-registry.js"></script>
+  
+  <!-- 功能模組 -->
   <script src="scripts/modules/ai-agent.js"></script>
   <script src="scripts/modules/analyzer.js"></script>
   <script src="scripts/modules/generator.js"></script>
   
+  <!-- 事件總線初始化 -->
   <script>
-    // 事件总线初始化（无 eval 风险）
     window.EventBus = new Vue({
       data: { lastActivity: null }
     });
@@ -38,8 +40,10 @@
     }
   </script>
 
+  <!-- 主應用邏輯 -->
   <script src="scripts/app/main.js"></script>
 
+  <!-- 自動啟動模擬測試 -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       log('系統初始化完成');
