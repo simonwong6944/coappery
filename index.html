@@ -2,11 +2,15 @@
 <html>
 <head>
   <title>CoAppery 開發平台</title>
+  <meta charset="UTF-8">
+  <!-- 添加 CSP 策略（可选） -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net;">
   <link rel="stylesheet" href="styles/main.css">
-  <!-- 添加 Vue.js 用於事件總線 -->
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <!-- 使用 Vue 运行时版本 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.runtime.min.js"></script>
 </head>
 <body>
+  <!-- 其余代码保持不变 -->
   <div id="app">
     <h1>CoAppery 模組系統</h1>
     <div class="console">
@@ -15,24 +19,17 @@
     </div>
   </div>
 
-  <!-- 模組系統核心 -->
   <script src="scripts/lib/module-registry.js"></script>
-  
-  <!-- 功能模組 -->
   <script src="scripts/modules/ai-agent.js"></script>
   <script src="scripts/modules/analyzer.js"></script>
   <script src="scripts/modules/generator.js"></script>
   
-  <!-- 事件總線初始化 -->
   <script>
-    // 創建全局事件總線
+    // 事件总线初始化（无 eval 风险）
     window.EventBus = new Vue({
-      data: {
-        lastActivity: null
-      }
+      data: { lastActivity: null }
     });
 
-    // 日誌記錄函數 (在控制台和頁面同時顯示)
     function log(message) {
       const timestamp = new Date().toLocaleTimeString();
       const logEntry = `[${timestamp}] ${message}`;
@@ -41,10 +38,8 @@
     }
   </script>
 
-  <!-- 主應用邏輯 -->
   <script src="scripts/app/main.js"></script>
 
-  <!-- 自動啟動模擬測試 -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       log('系統初始化完成');
@@ -54,7 +49,7 @@
         const aiAgent = CoAppery.getModule('AISuperAgent').init();
         log('AI 模組加載成功');
         
-        // 模擬用戶輸入觸發流程
+        // 使用函数而非字符串参数
         setTimeout(() => {
           EventBus.$emit('user-input', '創建用戶註冊模組');
           log('已發送測試指令: "創建用戶註冊模組"');
@@ -66,7 +61,6 @@
   </script>
 
   <style>
-    /* 基礎樣式 */
     body {
       font-family: Arial, sans-serif;
       max-width: 800px;
