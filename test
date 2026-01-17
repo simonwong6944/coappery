@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CSP测试</title>
+  <script>
+    console.log("基本脚本执行");
+  </script>
+</head>
+<body>
+  <h1>CSP测试</h1>
+</body>
+</html>
