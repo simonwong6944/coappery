@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>終極測試</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval';">
+</head>
+<body>
+  <h1 style="color:red">測試文字</h1>
+  <script>
+    console.log("基本腳本執行成功");
+    document.querySelector('h1').textContent = '動態修改成功';
+  </script>
+</body>
+</html>
